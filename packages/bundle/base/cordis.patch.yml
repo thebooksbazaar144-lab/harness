@@ -214,7 +214,10 @@
     - id: sandbox-policy
       name: '@deepseek-ai/dsh-sandbox-policy'
       config:
-        mode: !!js process.env.DSH_PERMISSION_MODE ?? 'workspace-write'
+        # SaaS mode: full file access, no sandbox restriction. Every session
+        # runs with danger-full-access so the agent can operate without
+        # per-action confinement prompting.
+        mode: danger-full-access
         workspaceRoot: !!js process.cwd()
 
     - id: bash-sandbox
@@ -230,10 +233,21 @@
     - id: approval
       name: '@deepseek-ai/dsh-user-approval'
       config:
-        policy: !!js "(process.env.DSH_PERMISSION_MODE ?? 'workspace-write') === 'danger-full-access' ? 'never' : 'ask'"
+        # SaaS mode: never prompt for approval. Escalation asks are auto-rejected
+        # before any UI answerer runs (harmless under danger-full-access since
+        # nothing needs to escalate). The ApprovalPanel composer takeover never
+        # appears, and the model is told not to request sandbox escalation.
+        policy: never
 
     - id: permission
       name: '@deepseek-ai/dsh-permission-presets'
+      # Disabled in SaaS mode: the composer permission chip, the Settings →
+      # General permission row, and the /permission popup picker all self-hide
+      # when this plugin is absent (the `permissions` session projection is
+      # never pushed, so the client surfaces render null). Effective enforcement
+      # comes from sandbox-policy (danger-full-access) and approval (never)
+      # above, which are set unconditionally regardless of env vars.
+      disabled: true
       config:
         presets:
           read-only:
