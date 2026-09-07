@@ -33,6 +33,10 @@ export type {} from '@deepseek-ai/dsh-api-session-controller/remote'
 export type * from '@deepseek-ai/dsh-api-session-controller/types'
 export type {} from '@deepseek-ai/dsh-api-workspace-controller/remote'
 export type * from '@deepseek-ai/dsh-api-workspace-controller/types'
+// sera-browser forwarded events: re-export the payload types so the emitted
+// client .d.ts references sera-events.d.ts, loading the Events + TypertRemoteEventSelection
+// augmentations for every client consumer of this package.
+export type { SeraScreenshotEvent, SeraStatusEvent } from '../sera-events.ts'
 export type { SessionJob as JobView } from '@deepseek-ai/dsh-api-session-controller/types'
 // The forwarded-event allowlist's selection seat: without it in the consumer's
 // compilation face `TypertRemoteEvent` is `never` and every `$on` call fails.

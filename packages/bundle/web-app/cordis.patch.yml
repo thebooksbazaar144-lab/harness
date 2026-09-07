@@ -310,6 +310,11 @@
     - id: ui-trajectory
       name: '@deepseek-ai/dsh-client-ui-trajectory'
 
+    # Browser side panel: renders the live cloud-browser view (sera-browser
+    # screenshots) beside the chat while the agent drives a browser.
+    - id: ui-sera-browser
+      name: '@deepseek-ai/dsh-client-ui-sera-browser'
+
 # ── the agent plane moves behind agent presets ─────────────────────────────
 #
 # Every row below composes what ONE agent contributes to the host registries:

@@ -26,6 +26,10 @@
       "types": "./lib/types/types.d.ts",
       "default": "./lib/types/types.js"
     },
+    "./sera-events": {
+      "types": "./lib/types/sera-events.d.ts",
+      "default": "./lib/types/sera-events.js"
+    },
     "./src/*": "./src/*",
     "./package.json": "./package.json"
   },

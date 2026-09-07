@@ -478,6 +478,17 @@
         fetch: true
         searchTimeoutMs: 60000
 
+    # Cloud browser tool: drives the sera-browser automation sidecar (a
+    # Playwright-first autonomous browser agent in services/sera-browser/).
+    # The agent calls `sera_browser_browse`; every step streams live to the
+    # Browser side panel. Runs in headless mode by default; pass
+    # browser_mode:headful per call where a display exists.
+    - id: tool-sera-browser
+      name: '@deepseek-ai/dsh-tool-sera-browser'
+      config:
+        baseUrl: !!js process.env.SERA_BROWSER_URL ?? 'http://127.0.0.1:8765'
+        defaultTimeout: 180
+
     # ── rows every mode mounts, whose values each overlay may state ──────────────
 
     # The tool registry. Presentation mode is a deployment choice; omitting it here

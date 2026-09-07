@@ -26,6 +26,10 @@ import type {} from '@deepseek-ai/dsh-settings/types'
 import type {} from '@deepseek-ai/dsh-user-approval'
 import type {} from '@deepseek-ai/dsh-user-questions'
 export type {} from '@deepseek-ai/dsh-api-session-controller/types'
+// sera-browser forwarded events: re-export the payload types so the emitted
+// .d.ts references sera-events.d.ts, loading the Events + TypertRemoteEventSelection
+// augmentations for every consumer of this package.
+export type { SeraScreenshotEvent, SeraStatusEvent } from './sera-events.ts'
 
 export { API_REMOTE_FORWARDED_EVENTS } from './remote-events.ts'
 export type { ApiRemoteForwardedEvent } from './types.ts'

@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+
+# Playwright
+.playwright/
+
+# Sessions / storage state (sensitive)
+sessions/
+storage_state.json
+*.storage_state.json
+
+# Test artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+test-results/
+.playwright-report/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Downloads / screenshots (runtime)
+download/
+screenshots/
