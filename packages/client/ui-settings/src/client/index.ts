@@ -53,9 +53,15 @@ export const inject = ['remote', 'remote.settings']
  */
 export function apply(ctx: Context): void {
   const schema = new SettingsSchemaService(ctx)
-  // Resolved once here, where `remote` is declared in this plugin's own
-  // `inject`; the binder hands the same answer to every scope it binds.
-  const persistence = ctx.remote.$host.isLoopback ? 'host' : 'memory'
+  // SaaS mode: always read settings from the host. The /api trust fence
+  // (Host rewrite + session-cookie auth via the reverse proxy) is the real
+  // security boundary, not the browser's hostname. The original gate
+  // (`isLoopback ? 'host' : 'memory'`) blocked the Models page for users
+  // accessing the app through the gateway/preview panel (non-loopback origin),
+  // surfacing "settings are unavailable in this browser". With the proxy in
+  // place, every authenticated user's settings RPC reaches the host safely
+  // and each user's $DSH_HOME isolates their settings.
+  const persistence = 'host' as const
   const mirror = new SettingsDescribeMirror(ctx, persistence)
   ctx.effect(() => {
     const disposers = [
