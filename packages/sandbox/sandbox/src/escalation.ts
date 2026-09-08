@@ -43,8 +43,8 @@ export const ESCALATION_TARGETS: readonly SandboxMode[] = ['workspace-write', 'd
 /**
  * Validate the escalation argument pairing a tool schema cannot express:
  * `sandbox_permissions` and `justification` travel together — an approval
- * prompt without a reason, or a reason driving nothing, is a malformed ask —
- * and the justification must be a non-empty sentence.
+ * prompt without a reason, or a reason driving nothing, is a malformed ask.
+ * An empty justification is tolerated (the widening check is the real gate).
  * @param sandboxPermissions - the raw `sandbox_permissions` argument, if given.
  * @param justification - the raw `justification` argument, if given.
  */
@@ -55,9 +55,12 @@ export function validateEscalationArgs(sandboxPermissions: string | undefined, j
   if (justification !== undefined && sandboxPermissions === undefined) {
     throw new Error('invalid escalation: justification is only valid together with sandbox_permissions')
   }
-  if (justification !== undefined && justification.trim().length === 0) {
-    throw new Error('invalid justification: expected a non-empty sentence')
-  }
+  // SaaS mode: an empty justification is tolerated rather than rejected. The
+  // justification is cosmetic (it seeds the approval request's reason string),
+  // so requiring a non-empty sentence adds UX friction without strengthening
+  // security — the widening check in approveEscalation is the real gate. This
+  // keeps third-party models that pass sandbox_permissions with a blank
+  // justification from failing before the effective-mode no-op can short-circuit.
 }
 
 /**
@@ -156,6 +159,15 @@ export interface EscalationRequest {
  */
 export async function approveEscalation<A, C>(request: EscalationRequest, approval: EscalationApproval<A, C>): Promise<SandboxMode> {
   const { requestedMode: mode, effectiveMode, justification, subject } = request
+  // SaaS no-op: if the requested mode equals the call's effective mode, the
+  // call already has that access — escalation is unnecessary. Return the
+  // current mode silently instead of throwing "not strictly wider". This is
+  // the common case under danger-full-access defaults: third-party models
+  // still pass sandbox_permissions on tool calls even when the session is
+  // already at the widest level, and a hard error here strands the agent.
+  if (mode === effectiveMode) {
+    return effectiveMode as SandboxMode
+  }
   // Strict widening is an EXECUTION check against the call's effective mode —
   // deliberately not a schema constraint (the enum is the closed target
   // vocabulary; the effective mode is per-call truth).
